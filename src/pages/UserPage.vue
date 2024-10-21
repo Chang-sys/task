@@ -96,18 +96,21 @@
       </template>
 
       <template v-slot:top-left>
-        <q-input
-          borderless
-          dense
-          debounce="300"
-          v-model="filter"
-          placeholder="Search By Name"
-          class="border border-gray-300 rounded-lg p-1 px-3"
-        >
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
+        <div class="flex items-center">
+          <q-input
+            borderless
+            dense
+            debounce="300"
+            v-model="filter"
+            placeholder="Search By Name"
+            class="border border-gray-300 rounded-lg p-1 px-3 mr-2"
+          >
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+          <q-btn label="Reset" color="secondary" @click="reloadPage" />
+        </div>
       </template>
     </q-table>
   </div>
@@ -161,7 +164,7 @@ const columns = [
     name: 'role',
     label: 'ROLE',
     align: 'left',
-    field: (row) => `${row.role.value}`,
+    field: (row) => `${row.role.label}`,
     sortable: false,
   },
   {
@@ -174,18 +177,18 @@ const columns = [
 ]
 
 // Mock user data
-const originalRows = [
+const originalRows = ref([
   {
     id: 1,
     avatar:
       'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
     firstName: 'John',
     lastName: 'Doe',
-    email: 'john@example.com',
+    email: 'john@gmail.com',
     title: 'Software Engineer',
     subtitle: 'Web dev',
     status: 'Active',
-    role: 'Owner',
+    role: { label: 'Developer', value: 'developer' },
   },
   {
     id: 2,
@@ -193,30 +196,63 @@ const originalRows = [
       'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
     firstName: 'Jane',
     lastName: 'Smith',
-    email: 'jane@example.com',
+    email: 'jane@gmail.com',
     title: 'Product Manager',
     subtitle: 'Product team',
     status: 'Inactive',
-    role: 'Admin',
+    role: { label: 'Admin', value: 'admin' },
   },
-]
+  {
+    id: 3,
+    avatar:
+      'https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRy5QMODyHm-LaMpgXOqMIUHPbQ-Y51jAZR_UJYC-9Dv1IL3ovh',
+    firstName: 'Elon',
+    lastName: 'Musk',
+    email: 'elonmusk@gmail.com',
+    title: 'CEO of Tesla Motors',
+    subtitle: 'Engineering',
+    status: 'Active',
+    role: { label: 'Owner', value: 'owner' },
+  },
+  {
+    id: 4,
+    avatar:
+      'https://www.aiscribbles.com/img/variant/large-preview/38412/?v=d0b611',
+    firstName: 'Alice',
+    lastName: 'Johnson',
+    email: 'alice@gmail.com',
+    title: 'UX Designer',
+    subtitle: 'Design Team',
+    status: 'Active',
+    role: { label: 'Editor', value: 'editor' },
+  },
+])
 
 const tableRef = ref(null)
 const rows = computed(() => {
-  // Get users from Vuex state
-  const usersFromState = store.getters['user/allUsers'] || []
   // Combine original rows with Vuex users
-  return [...originalRows, ...usersFromState]
+  const usersFromState = store.getters['user/allUsers'] || []
+  const allRows = [...originalRows.value, ...usersFromState]
+
+  if (!filter.value) {
+    return allRows
+  }
+
+  const lowerCaseFilter = filter.value.toLowerCase()
+  return allRows.filter((row) => {
+    const fullName = `${row.firstName} ${row.lastName}`.toLowerCase()
+    return fullName.includes(lowerCaseFilter)
+  })
 })
 
 const filter = ref('')
 const loading = ref(false)
 const pagination = ref({
-  sortBy: 'dec',
+  sortBy: 'desc',
   descending: false,
   page: 1,
   rowsPerPage: 5,
-  rowsNumber: originalRows.length,
+  rowsNumber: rows.value.length,
 })
 
 const selectedUser = ref(null)
@@ -245,13 +281,11 @@ const saveUser = (selectedUser) => {
 }
 
 const viewUser = (user) => {
-  console.log('Viewing user:', user)
   selectedUser.value = user
   isViewUserDetailModalOpen.value = true
 }
 
 const editUser = (user) => {
-  console.log('Editing user:', user)
   selectedUser.value = user
   isEditMode.value = true
   isUserModalOpen.value = true
@@ -260,32 +294,46 @@ const editUser = (user) => {
 const deleteUser = (user) => {
   console.log('Deleting user with ID:', user.id)
   rows.value = rows.value.filter((row) => row.id !== user.id)
-  console.log('Remaining users after deletion:', rows.value)
+  originalRows.value = originalRows.value.filter((row) => row.id !== user.id)
+  store.dispatch('user/deleteUser', user.id)
 }
 
 const fetchFromServer = (startRow, count, filter, sortBy, descending) => {
   const data = filter
-    ? rows.value.filter((row) =>
-        row.firstName.toLowerCase().includes(filter.toLowerCase() || row.lastName.toLowerCase().includes(filter.toLowerCase()))
+    ? rows.value.filter(
+        (row) =>
+          row.firstName.toLowerCase().includes(filter.toLowerCase()) ||
+          row.lastName.toLowerCase().includes(filter.toLowerCase())
       )
     : rows.value
 
-  // Sort data
-  const sortFn = descending
-    ? (a, b) => (a[sortBy] < b[sortBy] ? 1 : -1)
-    : (a, b) => (a[sortBy] > b[sortBy] ? 1 : -1)
+  if (sortBy) {
+    const sortFn =
+      sortBy === 'desc'
+        ? descending
+          ? (a, b) => (a.name > b.name ? -1 : a.name < b.name ? 1 : 0)
+          : (a, b) => (a.name > b.name ? 1 : a.name < b.name ? -1 : 0)
+        : descending
+        ? (a, b) => parseFloat(b[sortBy]) - parseFloat(a[sortBy])
+        : (a, b) => parseFloat(a[sortBy]) - parseFloat(b[sortBy])
+    data.sort(sortFn)
+  }
 
-  data.sort(sortFn)
   return data.slice(startRow, startRow + count)
 }
 
 // Get the total number of rows
 const getRowsNumberCount = (filter) => {
-  return filter
-    ? rows.value.filter((row) =>
-        row.firstName.toLowerCase().includes(filter.toLowerCase())
-      ).length
-    : rows.value.length
+  if (!filter) {
+    return rows.value.length
+  }
+  let count = 0
+  rows.value.forEach((treat) => {
+    if (treat.email.includes(filter)) {
+      ++count
+    }
+  })
+  return count
 }
 
 function onRequest(props) {
@@ -327,6 +375,10 @@ function onRequest(props) {
     // ...and turn of loading indicator
     loading.value = false
   }, 1500)
+}
+
+const reloadPage = () => {
+  location.reload()
 }
 
 onMounted(() => {
