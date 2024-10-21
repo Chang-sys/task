@@ -226,6 +226,6 @@
 
 <script setup>
 defineOptions({
-  name: 'DashboardBody'
+  name: 'DashboardPage',
 })
 </script>

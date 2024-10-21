@@ -21,9 +21,7 @@
         <AppHeader class="sticky top-0" @toggle-headerbar="toggleHeaderBar" />
         <!--Start Nav-bar end-->
 
-        <!--Start Body of dashboard here-->
-        <DashboardBody />
-        <!--End Body of dashboard here-->
+        <router-view />
       </div>
 
       <!--Start Header here-->
@@ -47,7 +45,6 @@ import { ref, watch } from 'vue'
 import AppHeader from 'components/AppHeader.vue'
 import SideBar from 'components/SideBar.vue'
 import HeaderBar from 'components/HeaderBar.vue'
-import DashboardBody from 'components/DashboardBody.vue'
 
 // Reactive variable to manage sidebar state
 const sidebarOpen = ref(false)

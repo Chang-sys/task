@@ -5,6 +5,7 @@
   >
     <div class="flex items-center justify-between h-16 px-6">
       <div class="flex items-center">
+        <!-- Logo and title -->
         <svg
           class="w-12 h-12"
           viewBox="0 0 512 512"
@@ -54,9 +55,13 @@
 
     <nav class="mt-4 mb-4 flex flex-col bg-gray-900">
       <div class="flex-1">
-        <a
-          class="flex items-center px-6 py-3 mt-2 text-gray-100 bg-gray-700 bg-opacity-25 rounded-md hover:bg-opacity-50 transition h-full"
-          href="/"
+        <!-- Dashboard link -->
+        <router-link
+          class="flex items-center px-6 py-2 mt-4 text-gray-500"
+          :to="{ name: 'Dashboard' }"
+          :class="{
+            'bg-gray-700 bg-opacity-25 text-white': $route.name === 'Dashboard',
+          }"
         >
           <svg
             class="w-6 h-6"
@@ -80,13 +85,18 @@
           </svg>
 
           <span class="mx-3">Dashboard</span>
-        </a>
+        </router-link>
       </div>
 
       <div class="flex-1">
-        <a
-          class="flex items-center px-6 py-3 mt-2 text-gray-500 hover:bg-gray-700 hover:bg-opacity-25 hover:text-gray-100 rounded-md transition h-full"
-          href="#"
+        <!-- User management link -->
+        <router-link
+          class="flex items-center px-6 py-2 mt-4 text-gray-500"
+          :to="{ name: 'UserManagement' }"
+          :class="{
+            'bg-gray-700 bg-opacity-25 text-white':
+              $route.name === 'UserManagement',
+          }"
         >
           <svg
             class="w-6 h-6 text-gray-800 dark:text-white"
@@ -106,15 +116,13 @@
           </svg>
 
           <span class="mx-3">User</span>
-        </a>
+        </router-link>
       </div>
     </nav>
   </div>
 </template>
 
 <script setup>
-import { ref, defineProps, watch, defineEmits } from 'vue'
-
 const emit = defineEmits(['toggle-headerbar'])
 
 defineOptions({

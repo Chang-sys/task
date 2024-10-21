@@ -2,7 +2,7 @@
   <div x-data="{ dropdownOpen: false }" class="relative">
     <button
       @click="dropdownOpen = !dropdownOpen"
-      class="relative block w-8 h-8 overflow-hidden rounded-full shadow focus:outline-none"
+      class="relative block w-12 h-12 overflow-hidden rounded-full shadow focus:outline-none"
     >
       <img
         class="object-cover w-full h-full"
