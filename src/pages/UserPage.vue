@@ -1,11 +1,11 @@
 <template>
   <!-- Responsive layout for header -->
-  <div class="m-10 ml-3 mb-3 pl-2 flex flex-col sm:flex-row items-center justify-between">
-    <p class="text-2xl font-bold">User Management</p>
+  <div class="m-10 ml-3 mb-3 pl-2 flex flex-row sm:flex-row items-center justify-between">
+     <p class="text-2xl font-bold text-left w-full sm:w-auto">User Management</p>
     <q-btn
       label="Add User"
       color="primary"
-      class="mt-4 sm:mt-0 sm:ml-4 w-full sm:w-auto"
+      class="mt-4 text-left sm:mt-0 sm:w-auto sm:ml-4"
       @click="openAddUserModal"
     />
   </div>
