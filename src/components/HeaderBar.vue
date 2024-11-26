@@ -62,6 +62,7 @@
           :class="{
             'bg-gray-700 bg-opacity-25 text-white': $route.name === 'Dashboard',
           }"
+          @click="CloseHeaderBar"
         >
           <svg
             class="w-6 h-6"
@@ -97,6 +98,7 @@
             'bg-gray-700 bg-opacity-25 text-white':
               $route.name === 'UserManagement',
           }"
+          @click="CloseHeaderBar"
         >
           <svg
             class="w-6 h-6 text-gray-800 dark:text-white"

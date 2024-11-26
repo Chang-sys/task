@@ -3,6 +3,8 @@
     v-model="isOpen"
     @hide="onClose"
     backdrop-filter="blur(4px) saturate(150%)"
+    transition-show="fade"
+    transition-hide="fade"
   >
     <q-card style="width: 700px; max-width: 80vw">
       <q-card-section>

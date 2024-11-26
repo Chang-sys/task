@@ -1,7 +1,9 @@
 <template>
   <!-- Responsive layout for header -->
-  <div class="m-10 ml-3 mb-3 pl-2 flex flex-row sm:flex-row items-center justify-between">
-     <p class="text-2xl font-bold text-left w-full sm:w-auto">User Management</p>
+  <div
+    class="m-10 ml-3 mb-3 pl-2 flex flex-row sm:flex-row items-center justify-between"
+  >
+    <p class="text-2xl font-bold text-left w-full sm:w-auto">User Management</p>
     <q-btn
       label="Add User"
       color="primary"
@@ -12,107 +14,124 @@
 
   <!-- Wrapping the q-table in a div for horizontal scrolling -->
   <div class="q-pa-md">
-    <!-- Force scrollable container -->
-    <div class="w-full overflow-hidden">
-      <!-- Force table to be scrollable -->
-      <div class="w-full min-w-[1000px] overflow-x-scroll">
-        <q-table
-          flat
-          bordered
-          ref="tableRef"
-          :rows="rows"
-          :columns="columns"
-          row-key="id"
-          v-model:pagination="pagination"
-          :loading="loading"
-          :filter="filter"
-          binary-state-sort
-          @request="onRequest"
-          class="min-w-full"
-        >
-          <!-- Loading spinner -->
-          <template v-if="loading" v-slot:loading>
-            <div class="flex justify-center items-center text-center">
-              <q-spinner-dots size="40px" color="primary" />
-            </div>
-          </template>
+    <!-- Force table to be scrollable -->
+    <div>
+      <q-table
+        flat
+        bordered
+        ref="tableRef"
+        :rows="rows"
+        :columns="columns"
+        row-key="id"
+        v-model:pagination="pagination"
+        :loading="loading"
+        :filter="filter"
+        binary-state-sort
+        @request="onRequest"
+      >
+        <!-- Loading spinner -->
+        <template v-if="loading" v-slot:loading>
+          <div class="flex justify-center items-center text-center">
+            <q-spinner-dots size="40px" color="primary" />
+          </div>
+        </template>
 
-          <!-- Custom cell templates -->
-          <template v-slot:body-cell-name="props">
-            <q-td :props="props">
-              <div class="flex items-center gap-3">
-                <q-avatar size="40px">
-                  <img :src="props.row.avatar" />
-                </q-avatar>
-                <div>
-                  <div class="font-medium text-gray-900">
-                    {{ props.row.firstName }} {{ props.row.lastName }}
-                  </div>
-                  <div class="text-sm text-gray-500">{{ props.row.email }}</div>
-                </div>
-              </div>
-            </q-td>
-          </template>
-
-          <template v-slot:body-cell-title="props">
-            <q-td :props="props">
+        <!-- Custom cell templates -->
+        <template v-slot:body-cell-name="props">
+          <q-td :props="props">
+            <div class="flex items-center gap-3">
+              <q-avatar size="40px">
+                <img :src="props.row.avatar" />
+              </q-avatar>
               <div>
-                <div class="font-medium text-gray-900">{{ props.row.title }}</div>
-                <div class="text-sm text-gray-500">{{ props.row.subtitle }}</div>
+                <div class="font-medium text-gray-900">
+                  {{ props.row.firstName }} {{ props.row.lastName }}
+                </div>
+                <div class="text-sm text-gray-500">{{ props.row.email }}</div>
               </div>
-            </q-td>
-          </template>
-
-          <template v-slot:body-cell-status="props">
-            <q-td :props="props">
-              <div
-                class="px-2 py-1 rounded-full text-xs font-medium inline-block"
-                :class="{
-                  'bg-green-100 text-green-700': props.row.status.toLowerCase() === 'active',
-                  'bg-red-100 text-red-700': props.row.status.toLowerCase() === 'inactive',
-                }"
-              >
-                {{ props.row.status }}
-              </div>
-            </q-td>
-          </template>
-
-          <!-- Action buttons for each row -->
-          <template v-slot:body-cell-action="props">
-            <q-td :props="props">
-              <div class="flex gap-2 flex-wrap sm:flex-nowrap">
-                <q-btn flat dense color="blue" label="View" @click="viewUser(props.row)" />
-                <q-btn flat dense color="orange" label="Edit" @click="editUser(props.row)" />
-                <q-btn flat dense color="red" label="Delete" @click="deleteUser(props.row)" />
-              </div>
-            </q-td>
-          </template>
-
-          <!-- Top left search bar with responsive reset button -->
-          <template v-slot:top-left>
-            <div class="flex flex-wrap items-center">
-              <q-input
-                borderless
-                dense
-                debounce="300"
-                v-model="filter"
-                placeholder="Search By Name"
-                class="border border-gray-300 rounded-lg p-1 px-3 mr-2 w-full sm:w-auto"
-              >
-                <template v-slot:append>
-                  <q-icon name="search" />
-                </template>
-              </q-input>
-              <q-btn
-                label="Reset"
-                color="secondary"
-                class="mt-2 sm:mt-0"
-                @click="reloadPage"
-              />
             </div>
-          </template>
-        </q-table>
-      </div>
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-title="props">
+          <q-td :props="props">
+            <div>
+              <div class="font-medium text-gray-900">{{ props.row.title }}</div>
+              <div class="text-sm text-gray-500">{{ props.row.subtitle }}</div>
+            </div>
+          </q-td>
+        </template>
+
+        <template v-slot:body-cell-status="props">
+          <q-td :props="props">
+            <div
+              class="px-2 py-1 rounded-full text-xs font-medium inline-block"
+              :class="{
+                'bg-green-100 text-green-700':
+                  props.row.status.toLowerCase() === 'active',
+                'bg-red-100 text-red-700':
+                  props.row.status.toLowerCase() === 'inactive',
+              }"
+            >
+              {{ props.row.status }}
+            </div>
+          </q-td>
+        </template>
+
+        <!-- Action buttons for each row -->
+        <template v-slot:body-cell-action="props">
+          <q-td :props="props">
+            <div class="flex gap-2 flex-wrap sm:flex-nowrap">
+              <q-btn
+                flat
+                dense
+                color="blue"
+                label="View"
+                @click="viewUser(props.row)"
+              />
+              <q-btn
+                flat
+                dense
+                color="orange"
+                label="Edit"
+                @click="editUser(props.row)"
+              />
+              <!-- <q-btn
+                flat
+                dense
+                color="red"
+                label="Delete"
+                @click="deleteUser(props.row)"
+              /> -->
+              <DeleteUserModal :user="props.row" @confirm-delete="deleteUser" />
+            </div>
+          </q-td>
+        </template>
+
+        <!-- Top left search bar with responsive reset button -->
+        <template v-slot:top-left>
+          <div class="flex flex-wrap items-center">
+            <q-input
+              borderless
+              dense
+              debounce="300"
+              v-model="filter"
+              placeholder="Search By Name"
+              class="border border-gray-300 rounded-lg p-1 px-3 mr-2 w-full sm:w-auto"
+            >
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+            <q-btn
+              label="Reset"
+              color="secondary"
+              class="mt-2 sm:mt-0"
+              @click="reloadPage"
+            />
+          </div>
+        </template>
+      </q-table>
     </div>
   </div>
 
@@ -131,12 +150,12 @@
   />
 </template>
 
-
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useStore } from 'vuex'
 import AddEditUserModal from 'src/components/AddEditUserModal.vue'
-import UserDeatilModel from 'src/components/UserDeatilModel.vue'
+import UserDetailModal from 'src/components/UserDeatilModel.vue'
+import DeleteUserModal from 'src/components/DeleteUserModal.vue'
 
 const store = useStore() // Initialize the store
 
@@ -155,14 +174,14 @@ const columns = [
     label: 'TITLE',
     align: 'left',
     field: 'title',
-    sortable: false,
+    sortable: true,
   },
   {
     name: 'status',
     label: 'STATUS',
     align: 'left',
     field: 'status',
-    sortable: false,
+    sortable: true,
   },
   {
     name: 'role',
@@ -253,7 +272,7 @@ const filter = ref('')
 const loading = ref(false)
 const pagination = ref({
   sortBy: 'desc',
-  descending: false,
+  descending: true,
   page: 1,
   rowsPerPage: 5,
   rowsNumber: rows.value.length,
@@ -312,11 +331,22 @@ const fetchFromServer = (startRow, count, filter, sortBy, descending) => {
     : rows.value
 
   if (sortBy) {
+    console.log('Sorting by:', sortBy)
     const sortFn =
-      sortBy === 'desc'
+      sortBy === 'name'
         ? descending
-          ? (a, b) => (a.name > b.name ? -1 : a.name < b.name ? 1 : 0)
-          : (a, b) => (a.name > b.name ? 1 : a.name < b.name ? -1 : 0)
+          ? (a, b) =>
+              a.firstName > b.firstName ? -1 : a.firstName < b.firstName ? 1 : 0
+          : (a, b) =>
+              a.firstName > b.firstName ? 1 : a.firstName < b.firstName ? -1 : 0
+        : sortBy === 'title'
+        ? descending
+          ? (a, b) => (a.title > b.title ? -1 : a.title < b.title ? 1 : 0)
+          : (a, b) => (a.title > b.title ? 1 : a.title < b.title ? -1 : 0)
+        : sortBy === 'status'
+        ? descending
+          ? (a, b) => (a.status > b.status ? -1 : a.status < b.status ? 1 : 0)
+          : (a, b) => (a.status > b.status ? 1 : a.status < b.status ? -1 : 0)
         : descending
         ? (a, b) => parseFloat(b[sortBy]) - parseFloat(a[sortBy])
         : (a, b) => parseFloat(a[sortBy]) - parseFloat(b[sortBy])
